@@ -1,14 +1,15 @@
 # Copy this file to .github/workflows/swatter.yml in any repo you want
 # reviewed, and set the SWATTER_API_KEY secret:
 #   gh secret set SWATTER_API_KEY -R <owner>/<repo>
+#
+# Comment-only mode: reviews run when the owner or a collaborator comments
+# "@swatter review" on a PR. No automatic per-PR reviews.
 name: swatter
 on:
-  pull_request:
-    types: [opened, reopened]
   issue_comment:
     types: [created]
 concurrency:
-  group: swatter-${{ github.event.pull_request.number || github.event.issue.number }}
+  group: swatter-${{ github.event.issue.number }}
   cancel-in-progress: true
 permissions:
   contents: read

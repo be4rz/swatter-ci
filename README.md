@@ -13,8 +13,8 @@ apply everywhere at once.
 
 ## How reviews trigger (on-demand mode)
 
-- A PR gets one automatic review when opened or reopened.
-- After that, comment `@swatter review` on the PR to re-review (owner and
+- No automatic reviews.
+- Comment `@swatter review` on the PR to re-review (owner and
   collaborators only).
 - Reviews are advisory (`fail_on: never`): inline comments + summary + a green
   check, never a blocked merge.
