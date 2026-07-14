@@ -1,0 +1,42 @@
+name: swatter-review
+
+# Reusable workflow: all Swatter configuration lives here, once.
+# Repos call this from a small stub (see README). To change models,
+# effort, or the gateway URL for every repo, edit this file only.
+
+on:
+  workflow_call:
+    secrets:
+      api_key:
+        description: 9router API key (pass repo secret SWATTER_API_KEY)
+        required: true
+
+jobs:
+  review:
+    # Runs on: PR open/reopen for same-repo PRs, or an "@swatter review"
+    # comment from the repo owner / a collaborator. The author gate matters:
+    # issue_comment runs with a write token, so without it any commenter
+    # could spend the review quota.
+    if: >-
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       contains(github.event.comment.body, '@swatter review') &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # comment events carry no PR head ref — check out refs/pull/N/head
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || '' }}
+      - uses: lohi-ai/swatter@v0
+        with:
+          provider: openai-compat
+          base_url: https://13-214-166-99.sslip.io/v1
+          api_key: ${{ secrets.api_key }}
+          model: cx/gpt-5.5
+          model_cheap: cx/gpt-5.4-mini
+          effort: auto
+          fail_on: never

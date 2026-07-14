@@ -1,0 +1,21 @@
+# Copy this file to .github/workflows/swatter.yml in any repo you want
+# reviewed, and set the SWATTER_API_KEY secret:
+#   gh secret set SWATTER_API_KEY -R <owner>/<repo>
+name: swatter
+on:
+  pull_request:
+    types: [opened, reopened]
+  issue_comment:
+    types: [created]
+concurrency:
+  group: swatter-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+jobs:
+  review:
+    uses: be4rz/swatter-ci/.github/workflows/review.yml@main
+    secrets:
+      api_key: ${{ secrets.SWATTER_API_KEY }}
