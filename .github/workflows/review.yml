@@ -36,5 +36,5 @@ jobs:
           api_key: ${{ secrets.api_key }}
           model: cx/gpt-5.5
           model_cheap: cx/gpt-5.4-mini
-          effort: auto
+          effort: high
           fail_on: never
